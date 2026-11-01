@@ -1,0 +1,135 @@
+/* Global styles */
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	min-width: 320px;
+	min-height: 100%;
+	font-family: Inter, Arial, sans-serif;
+	background: #f4f6f8;
+	color: #1e293b;
+}
+
+/* Main application */
+#app {
+	width: 100%;
+	min-height: 100vh;
+}
+
+.app {
+	min-height: 100vh;
+	padding: 24px;
+}
+
+/* Header */
+.app-header {
+	margin-bottom: 20px;
+}
+
+.app-header h1 {
+	margin: 0 0 8px;
+	font-size: 28px;
+	font-weight: 700;
+}
+
+.app-header p {
+	margin: 0;
+	color: #64748b;
+}
+
+/* Map container */
+.map-section {
+	width: 100%;
+	height: 75vh;
+	min-height: 500px;
+}
+
+#map-root {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	border-radius: 12px;
+	background: #e2e8f0;
+}
+
+/* Basemap switcher */
+.basemap-switcher {
+	position: absolute;
+	top: 12px;
+	left: 12px;
+	z-index: 10;
+	padding: 10px 14px;
+	border: 1px solid #e2e8f0;
+	border-radius: 6px;
+	background: white;
+	color: #1e293b;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	box-shadow: 0 2px 8px #0002;
+}
+
+.basemap-switcher:hover {
+	background: #f1f5f9;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+	.app {
+		padding: 12px;
+	}
+
+	.app-header h1 {
+		font-size: 23px;
+	}
+
+	.map-section {
+		height: 75vh;
+		min-height: 400px;
+	}
+}
+
+/* Polygon drawing toolbar */
+
+.drawing-toolbar {
+	position: absolute;
+	top: 60px;
+	left: 12px;
+	z-index: 10;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 10px;
+	background: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 8px #0002;
+}
+
+.drawing-toolbar button {
+	padding: 10px 14px;
+	border: 1px solid #e2e8f0;
+	border-radius: 6px;
+	background: white;
+	color: #1e293b;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.drawing-toolbar button:hover:not(:disabled) {
+	background: #e2e8f0;
+}
+
+.drawing-toolbar button.active {
+	background: #1d4ed8;
+	color: white;
+}
+
+.drawing-toolbar button:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
