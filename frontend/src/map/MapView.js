@@ -172,6 +172,50 @@ export default function MapView(containerId) {
 				console.log("Polygon properties:", feature.properties);
 			});
 
+			// NEW (Part 2): when you select a polygon, show its zone in the
+			// dropdown, so you can see what it is and change it
+			draw.on("select", (id) => {
+				const feature = draw.getSnapshotFeature(id);
+				if (!feature || !feature.properties.categoryId) {
+					return;
+				}
+
+				zoningSelect.setValue(feature.properties.categoryId);
+				console.log("Selected polygon zone:", feature.properties.categoryId);
+			});
+
+			// NEW (Part 2): when you change the dropdown while a polygon is
+			// selected, give that polygon the new zone. Its colour updates
+			// automatically because the colour is looked up from the zone.
+			zoningSelect.select.addEventListener("change", () => {
+				const selected = draw
+					.getSnapshot()
+					.filter((feature) => feature.properties.selected === true);
+
+				if (selected.length === 0) {
+					// Nothing selected: the new zone will be used for the
+					// next polygon you draw
+					return;
+				}
+
+				const categoryId = zoningSelect.getValue();
+
+				selected.forEach((feature) => {
+					draw.updateFeatureProperties(feature.id, { categoryId });
+				});
+
+				console.log(
+					"Changed zone of",
+					selected.length,
+					"polygon(s) to:",
+					categoryId,
+				);
+				console.log(
+					"Polygon properties:",
+					draw.getSnapshotFeature(selected[0].id).properties,
+				);
+			});
+
 			// Debug map clicks
 			map.on("click", () => {
 				console.log("Map clicked. Current mode:", draw.getMode());

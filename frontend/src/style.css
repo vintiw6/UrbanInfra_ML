@@ -124,9 +124,9 @@ body {
 	background: #e2e8f0;
 }
 
-.drawing-toolbar button.active {
-	background: #1d4ed8;
-	color: white;
+/* Keep the active button blue (and readable) while the mouse is over it */
+.drawing-toolbar button.active:hover {
+	background: #1e40af;
 }
 
 .drawing-toolbar button:disabled {

@@ -50,9 +50,22 @@ export function createZoningSelect() {
 	row.append(swatch, select);
 	wrapper.append(label, row);
 
+	// NEW: let other code change the dropdown (for example, to show the
+	// zone of the polygon you just selected). Changing select.value in code
+	// does not fire a "change" event, so we update the swatch ourselves.
+	function setValue(categoryId) {
+		const exists = ZONING_CATEGORIES.some((item) => item.id === categoryId);
+		if (!exists) {
+			return; // unknown zone id: leave the dropdown as it is
+		}
+		select.value = categoryId;
+		updateSwatch();
+	}
+
 	return {
 		element: wrapper, // the HTML to put in the toolbar
 		select, // the <select> itself, so other code can listen for changes
 		getValue: () => select.value, // the selected category id
+		setValue, // NEW: change the selected category id from code
 	};
 }
