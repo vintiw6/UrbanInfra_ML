@@ -1,5 +1,5 @@
 import "./style.css";
-import MapView from "./map/MapView.jsx";
+import MapView from "./map/MapView.js";
 
 document.querySelector("#app").innerHTML = `
   <main class="app">

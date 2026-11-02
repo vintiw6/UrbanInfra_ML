@@ -12,6 +12,10 @@ import {
 
 import { TerraDrawMapLibreGLAdapter } from "terra-draw-maplibre-gl-adapter";
 
+// NEW: zoning categories and the zone dropdown
+import { getCategoryColor } from "../zoning/categories.js";
+import { createZoningSelect } from "../zoning/zoningSelect.js";
+
 // Configure MapLibre worker BEFORE creating the map
 setWorkerUrl(workerUrl);
 
@@ -31,7 +35,7 @@ export default function MapView(containerId) {
 				type: "raster",
 				tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
 				tileSize: 256,
-				attribution: "© OpenStreetMap contributors",
+				attribution: "&copy; OpenStreetMap contributors",
 			},
 		},
 		layers: [
@@ -57,6 +61,9 @@ export default function MapView(containerId) {
 	const toolbar = document.createElement("div");
 	toolbar.className = "drawing-toolbar";
 
+	// NEW: zone dropdown at the top of the toolbar
+	const zoningSelect = createZoningSelect();
+
 	const drawButton = document.createElement("button");
 	drawButton.textContent = "Draw Polygon";
 	drawButton.disabled = true;
@@ -69,10 +76,19 @@ export default function MapView(containerId) {
 	deleteButton.textContent = "Delete Selected";
 	deleteButton.disabled = true;
 
-	toolbar.append(drawButton, selectButton, deleteButton);
+	toolbar.append(zoningSelect.element, drawButton, selectButton, deleteButton);
 	container.appendChild(toolbar);
 
 	let draw = null;
+
+	// NEW: work out which colour a polygon should be.
+	// A finished polygon has properties.categoryId, so we use that.
+	// A polygon still being drawn has no categoryId yet, so we show the
+	// colour of the zone currently picked in the dropdown.
+	function getPolygonColor(feature) {
+		const categoryId = feature.properties.categoryId || zoningSelect.getValue();
+		return getCategoryColor(categoryId);
+	}
 
 	// Initialize Terra Draw after MapLibre loads
 	map.once("load", () => {
@@ -87,9 +103,11 @@ export default function MapView(containerId) {
 				modes: [
 					new TerraDrawPolygonMode({
 						styles: {
-							fillColor: "#ff0000",
-							fillOpacity: 0.3,
-							outlineColor: "#ff0000",
+							// NEW: colours are functions, so each polygon
+							// gets the colour of its own zone
+							fillColor: getPolygonColor,
+							fillOpacity: 0.45,
+							outlineColor: getPolygonColor,
 							outlineOpacity: 1,
 							outlineWidth: 3,
 
@@ -102,10 +120,13 @@ export default function MapView(containerId) {
 
 					new TerraDrawSelectMode({
 						styles: {
-							selectedPolygonColor: "#2563eb",
-							selectedPolygonFillOpacity: 0.3,
+							// NEW: a selected polygon keeps its zone colour
+							// and gets a thick blue outline so you can see
+							// it is selected
+							selectedPolygonColor: getPolygonColor,
+							selectedPolygonFillOpacity: 0.6,
 							selectedPolygonOutlineColor: "#1d4ed8",
-							selectedPolygonOutlineWidth: 3,
+							selectedPolygonOutlineWidth: 4,
 						},
 
 						flags: {
@@ -133,6 +154,23 @@ export default function MapView(containerId) {
 			drawButton.disabled = false;
 			selectButton.disabled = false;
 			deleteButton.disabled = false;
+
+			// NEW: when a polygon is finished, store the selected zone
+			// inside the polygon's properties
+			draw.on("finish", (id, context) => {
+				// "finish" also fires after editing (dragging a vertex etc.).
+				// We only want brand-new polygons here.
+				if (context.mode !== "polygon" || context.action !== "draw") {
+					return;
+				}
+
+				const categoryId = zoningSelect.getValue();
+				draw.updateFeatureProperties(id, { categoryId });
+
+				const feature = draw.getSnapshotFeature(id);
+				console.log("New polygon zoned as:", categoryId);
+				console.log("Polygon properties:", feature.properties);
+			});
 
 			// Debug map clicks
 			map.on("click", () => {

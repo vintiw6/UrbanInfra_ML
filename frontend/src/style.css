@@ -133,3 +133,41 @@ body {
 	opacity: 0.4;
 	cursor: not-allowed;
 }
+/* Zoning dropdown (inside the drawing toolbar) */
+.zoning-select {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid #e2e8f0;
+}
+
+.zoning-select label {
+	font-size: 12px;
+	font-weight: 600;
+	color: #64748b;
+}
+
+.zoning-select-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.zoning-swatch {
+	flex-shrink: 0;
+	width: 16px;
+	height: 16px;
+	border: 1px solid #0003;
+	border-radius: 4px;
+}
+
+.zoning-select select {
+	flex: 1;
+	padding: 8px;
+	border: 1px solid #e2e8f0;
+	border-radius: 6px;
+	background: white;
+	color: #1e293b;
+	font-size: 13px;
+}
