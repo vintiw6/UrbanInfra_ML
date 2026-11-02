@@ -1,12 +1,16 @@
 // Builds the "Zone" dropdown shown in the drawing toolbar.
 //
-// The dropdown options come from the ZONING_CATEGORIES list, so adding a
-// new category there adds it to the dropdown automatically.
+// The dropdown options come from the category list in categories.js.
+// When a zone is added, renamed, recoloured or removed, the dropdown
+// rebuilds its options automatically.
 
 import {
-	ZONING_CATEGORIES,
-	DEFAULT_CATEGORY_ID,
+	getCategories,
+	categoryExists,
+	getDefaultCategoryId,
 	getCategoryColor,
+	onCategoriesChange,
+	UNASSIGNED_CATEGORY,
 } from "./categories.js";
 
 export function createZoningSelect() {
@@ -29,33 +33,61 @@ export function createZoningSelect() {
 	const select = document.createElement("select");
 	select.id = "zoning-dropdown";
 
-	// One <option> per category
-	ZONING_CATEGORIES.forEach((category) => {
-		const option = document.createElement("option");
-		option.value = category.id;
-		option.textContent = category.name;
-		select.appendChild(option);
-	});
-
-	select.value = DEFAULT_CATEGORY_ID;
-
 	// Keep the swatch colour in sync with the dropdown
 	function updateSwatch() {
 		swatch.style.backgroundColor = getCategoryColor(select.value);
 	}
 
+	// (Re)build the list of options from the current categories.
+	// Called once at the start, and again every time the list changes.
+	function renderOptions() {
+		const previousValue = select.value;
+		select.innerHTML = ""; // remove all old options
+
+		// One <option> per category
+		getCategories().forEach((category) => {
+			const option = document.createElement("option");
+			option.value = category.id;
+			option.textContent = category.name;
+			select.appendChild(option);
+		});
+
+		// A greyed-out "Unassigned" option. You cannot pick it yourself,
+		// but it is shown when you select a polygon whose zone was removed.
+		const unassignedOption = document.createElement("option");
+		unassignedOption.value = UNASSIGNED_CATEGORY.id;
+		unassignedOption.textContent = `(${UNASSIGNED_CATEGORY.name})`;
+		unassignedOption.disabled = true;
+		select.appendChild(unassignedOption);
+
+		// Keep the same zone selected if it still exists,
+		// otherwise go back to the first zone in the list
+		if (
+			categoryExists(previousValue) ||
+			previousValue === UNASSIGNED_CATEGORY.id
+		) {
+			select.value = previousValue;
+		} else {
+			select.value = getDefaultCategoryId();
+		}
+
+		updateSwatch();
+	}
+
 	select.addEventListener("change", updateSwatch);
-	updateSwatch();
+	renderOptions();
+	onCategoriesChange(renderOptions);
 
 	row.append(swatch, select);
 	wrapper.append(label, row);
 
-	// NEW: let other code change the dropdown (for example, to show the
-	// zone of the polygon you just selected). Changing select.value in code
-	// does not fire a "change" event, so we update the swatch ourselves.
+	// Let other code change the dropdown (for example, to show the zone of
+	// the polygon you just selected). Changing select.value in code does
+	// not fire a "change" event, so we update the swatch ourselves.
 	function setValue(categoryId) {
-		const exists = ZONING_CATEGORIES.some((item) => item.id === categoryId);
-		if (!exists) {
+		const isKnown =
+			categoryExists(categoryId) || categoryId === UNASSIGNED_CATEGORY.id;
+		if (!isKnown) {
 			return; // unknown zone id: leave the dropdown as it is
 		}
 		select.value = categoryId;
@@ -66,6 +98,6 @@ export function createZoningSelect() {
 		element: wrapper, // the HTML to put in the toolbar
 		select, // the <select> itself, so other code can listen for changes
 		getValue: () => select.value, // the selected category id
-		setValue, // NEW: change the selected category id from code
+		setValue, // change the selected category id from code
 	};
 }

@@ -1,5 +1,6 @@
 import "./style.css";
 import MapView from "./map/MapView.js";
+import { createCategoryPanel } from "./zoning/categoryPanel.js";
 
 document.querySelector("#app").innerHTML = `
   <main class="app">
@@ -8,10 +9,15 @@ document.querySelector("#app").innerHTML = `
       <p>Urban Growth & Infrastructure Planner</p>
     </header>
 
-    <section class="map-section">
-      <div id="map-root"></div>
-    </section>
+    <div class="workspace">
+      <section class="map-section">
+        <div id="map-root"></div>
+      </section>
+
+      <aside id="category-panel" class="category-panel"></aside>
+    </div>
   </main>
 `;
 
 MapView("map-root");
+createCategoryPanel("category-panel");
