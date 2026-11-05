@@ -1,6 +1,7 @@
 import "./style.css";
 import MapView from "./map/MapView.js";
 import { createCategoryPanel } from "./zoning/categoryPanel.js";
+import { createStatsPanel } from "./stats/statsPanel.js";
 
 document.querySelector("#app").innerHTML = `
   <main class="app">
@@ -16,8 +17,11 @@ document.querySelector("#app").innerHTML = `
 
       <aside id="category-panel" class="category-panel"></aside>
     </div>
+
+    <section id="stats-panel" class="stats-panel"></section>
   </main>
 `;
 
-MapView("map-root");
+const statsPanel = createStatsPanel("stats-panel");
+MapView("map-root", statsPanel.update);
 createCategoryPanel("category-panel");

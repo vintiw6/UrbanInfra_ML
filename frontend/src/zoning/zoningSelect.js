@@ -13,6 +13,9 @@ import {
 	UNASSIGNED_CATEGORY,
 } from "./categories.js";
 
+// Dropdown value shown when the selected polygons are in different zones
+export const MIXED_ZONES = "__mixed__";
+
 export function createZoningSelect() {
 	// Wrapper that holds the label, colour swatch and dropdown together
 	const wrapper = document.createElement("div");
@@ -60,11 +63,19 @@ export function createZoningSelect() {
 		unassignedOption.disabled = true;
 		select.appendChild(unassignedOption);
 
+		// Same idea: shown when the selected polygons are in different zones
+		const mixedOption = document.createElement("option");
+		mixedOption.value = MIXED_ZONES;
+		mixedOption.textContent = "(Mixed zones)";
+		mixedOption.disabled = true;
+		select.appendChild(mixedOption);
+
 		// Keep the same zone selected if it still exists,
 		// otherwise go back to the first zone in the list
 		if (
 			categoryExists(previousValue) ||
-			previousValue === UNASSIGNED_CATEGORY.id
+			previousValue === UNASSIGNED_CATEGORY.id ||
+			previousValue === MIXED_ZONES
 		) {
 			select.value = previousValue;
 		} else {
@@ -86,7 +97,9 @@ export function createZoningSelect() {
 	// not fire a "change" event, so we update the swatch ourselves.
 	function setValue(categoryId) {
 		const isKnown =
-			categoryExists(categoryId) || categoryId === UNASSIGNED_CATEGORY.id;
+			categoryExists(categoryId) ||
+			categoryId === UNASSIGNED_CATEGORY.id ||
+			categoryId === MIXED_ZONES;
 		if (!isKnown) {
 			return; // unknown zone id: leave the dropdown as it is
 		}

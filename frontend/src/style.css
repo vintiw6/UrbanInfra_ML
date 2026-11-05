@@ -180,6 +180,32 @@ body {
 	cursor: pointer;
 }
 
+/* Area of the selected polygon(s) (inside the drawing toolbar) */
+.area-readout {
+	max-width: 170px;
+	padding-top: 8px;
+	border-top: 1px solid #e2e8f0;
+	color: #64748b;
+	font-size: 12px;
+}
+
+.area-readout.has-area {
+	color: #1e293b;
+	font-size: 13px;
+	font-weight: 700;
+}
+
+/* Result of the last scenario save or load (inside the drawing toolbar) */
+.scenario-message {
+	max-width: 170px;
+	color: #15803d;
+	font-size: 12px;
+}
+
+.scenario-message.is-error {
+	color: #b91c1c;
+}
+
 /* Workspace: map on the left, Zones panel on the right */
 .workspace {
 	display: flex;
@@ -346,6 +372,92 @@ body {
 
 .category-add-button:hover {
 	background: #1e40af;
+}
+
+/* Statistics panel, under the map */
+.stats-panel {
+	margin-top: 16px;
+	padding: 16px;
+	background: white;
+	border-radius: 12px;
+	box-shadow: 0 2px 8px #0002;
+}
+
+/* The browser's "hidden" behaviour is overridden by display rules like flex */
+.stats-panel [hidden] {
+	display: none;
+}
+
+.stats-summary {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px 40px;
+	margin: 12px 0 16px;
+}
+
+.stats-summary dt {
+	color: #64748b;
+	font-size: 12px;
+}
+
+.stats-summary dd {
+	margin: 2px 0 0;
+	font-size: 20px;
+	font-weight: 700;
+}
+
+.stats-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 13px;
+}
+
+.stats-table th {
+	padding: 6px 12px 6px 0;
+	border-bottom: 1px solid #e2e8f0;
+	color: #64748b;
+	font-size: 12px;
+	font-weight: 600;
+	text-align: left;
+}
+
+.stats-table td {
+	padding: 6px 12px 6px 0;
+	border-bottom: 1px solid #f1f5f9;
+}
+
+.stats-table .stats-number {
+	text-align: right;
+	white-space: nowrap;
+	font-variant-numeric: tabular-nums;
+}
+
+.stats-zone {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-weight: 600;
+}
+
+.stats-bar-column {
+	width: 50%;
+}
+
+/* A thin bar. The dark edge keeps pale zone colours visible on white. */
+.stats-bar {
+	min-width: 2px;
+	height: 10px;
+	border-radius: 0 4px 4px 0;
+	box-shadow: inset 0 0 0 1px #0003;
+}
+
+/* For screen readers only */
+.stats-visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
 }
 
 /* On narrow screens, put the Zones panel under the map */

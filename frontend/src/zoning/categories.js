@@ -146,6 +146,12 @@ export function removeCategory(categoryId) {
 	return true;
 }
 
+// Replace the whole list, for example when loading a saved scenario
+export function replaceCategories(newCategories) {
+	categories = newCategories.map((category) => ({ ...category }));
+	notifyChange({ type: "replace" });
+}
+
 // ---------- Helpers ----------
 
 // Turn a name like "Mixed Use" into an id like "mixed-use".

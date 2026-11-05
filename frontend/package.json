@@ -12,6 +12,7 @@
     "vite": "^8.3.5"
   },
   "dependencies": {
+    "@turf/area": "^7.4.0",
     "maplibre-gl": "^6.16.0",
     "terra-draw": "^1.39.0",
     "terra-draw-maplibre-gl-adapter": "^1.5.0"

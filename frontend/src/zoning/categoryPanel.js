@@ -175,11 +175,11 @@ export function createCategoryPanel(containerId) {
 		addNameInput.value = "";
 	});
 
-	// Rebuild the rows when zones are added or removed.
+	// Rebuild the rows when zones are added, removed or replaced.
 	// We skip "update" (rename/recolour) on purpose: rebuilding then would
 	// close the colour picker while you are still using it.
 	onCategoriesChange((change) => {
-		if (change.type === "add" || change.type === "remove") {
+		if (change.type !== "update") {
 			renderList();
 		}
 	});
