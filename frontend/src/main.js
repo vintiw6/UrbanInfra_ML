@@ -2,12 +2,14 @@ import "./style.css";
 import MapView from "./map/MapView.js";
 import { createCategoryPanel } from "./zoning/categoryPanel.js";
 import { createStatsPanel } from "./stats/statsPanel.js";
+import { showBackendStatus } from "./api/backendStatus.js";
 
 document.querySelector("#app").innerHTML = `
   <main class="app">
     <header class="app-header">
       <h1>UrbanInfra ML</h1>
       <p>Urban Growth & Infrastructure Planner</p>
+      <p id="backend-status" class="backend-status">Backend: checking...</p>
     </header>
 
     <div class="workspace">
@@ -25,3 +27,4 @@ document.querySelector("#app").innerHTML = `
 const statsPanel = createStatsPanel("stats-panel");
 MapView("map-root", statsPanel.update);
 createCategoryPanel("category-panel");
+showBackendStatus("backend-status");

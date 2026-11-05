@@ -38,8 +38,10 @@ export default function MapView(containerId, onPolygonsChange) {
 		return;
 	}
 
-	// OpenStreetMap style
-	const osmStyle = {
+	// Both basemaps are in the style from the start, and the switcher only
+	// shows or hides them. Changing the whole style instead would also remove
+	// the polygons Terra Draw has added to the map.
+	const mapStyle = {
 		version: 8,
 		sources: {
 			osm: {
@@ -48,6 +50,19 @@ export default function MapView(containerId, onPolygonsChange) {
 				tileSize: 256,
 				attribution: "&copy; OpenStreetMap contributors",
 			},
+			// EOxCloudless is free for non-commercial use only (CC BY-NC-SA 4.0),
+			// and this credit must stay visible on the map. Commercial use
+			// needs a licence from EOX: https://cloudless.eox.at
+			satellite: {
+				type: "raster",
+				tiles: [
+					"https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2025_3857/default/g/{z}/{y}/{x}.jpg",
+				],
+				tileSize: 256,
+				maxzoom: 14, // the imagery is 10 m per pixel, so no more detail after this
+				attribution:
+					'EOxCloudless <a href="https://cloudless.eox.at" target="_blank" rel="noopener">https://cloudless.eox.at</a> by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2025)',
+			},
 		},
 		layers: [
 			{
@@ -55,18 +70,49 @@ export default function MapView(containerId, onPolygonsChange) {
 				type: "raster",
 				source: "osm",
 			},
+			{
+				id: "satellite-layer",
+				type: "raster",
+				source: "satellite",
+				layout: { visibility: "none" },
+			},
 		],
 	};
 
 	// Initialize map
 	const map = new maplibregl.Map({
 		container,
-		style: osmStyle,
+		style: mapStyle,
 		center: [81.63, 21.25],
 		zoom: 11,
+		// Keep the map credits fully visible, even on small screens
+		attributionControl: { compact: false },
 	});
 
 	map.addControl(new maplibregl.NavigationControl(), "top-right");
+
+	// Basemap switcher. The button names the basemap you would switch to.
+	const basemapButton = document.createElement("button");
+	basemapButton.className = "basemap-switcher";
+	basemapButton.textContent = "Satellite";
+	basemapButton.disabled = true;
+	container.appendChild(basemapButton);
+
+	let showingSatellite = false;
+	basemapButton.onclick = () => {
+		showingSatellite = !showingSatellite;
+		map.setLayoutProperty(
+			"satellite-layer",
+			"visibility",
+			showingSatellite ? "visible" : "none",
+		);
+		map.setLayoutProperty(
+			"osm-layer",
+			"visibility",
+			showingSatellite ? "none" : "visible",
+		);
+		basemapButton.textContent = showingSatellite ? "Street map" : "Satellite";
+	};
 
 	// Drawing toolbar
 	const toolbar = document.createElement("div");
@@ -306,6 +352,7 @@ export default function MapView(containerId, onPolygonsChange) {
 			deleteButton.disabled = false;
 			saveButton.disabled = false;
 			loadButton.disabled = false;
+			basemapButton.disabled = false;
 
 			// "change" fires whenever a polygon is selected, deselected,
 			// reshaped or deleted

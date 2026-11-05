@@ -40,6 +40,17 @@ body {
 	color: #64748b;
 }
 
+.app-header .backend-status {
+	margin-top: 4px;
+	color: #b91c1c;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.app-header .backend-status.is-connected {
+	color: #15803d;
+}
+
 /* Map container */
 .map-section {
 	width: 100%;
